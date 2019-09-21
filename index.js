@@ -1,21 +1,8 @@
-/**
- * This is the main entrypoint to your Probot app
- * @param {import('probot').Application} app
- */
 module.exports = app => {
   app.log('Yay, the app was loaded!')
 
   app.on('repository.created', async context => {
     app.log('Received Repo Created Event')
-      var issue = { 
-        owner: context.payload.repository.owner.login, 
-        repo: context.payload.repository.name, 
-        title: `Thank you @${context.payload.sender.login}, for creating a repository!`, 
-        body: `The master branch has been protected so it cannot be directly committed to.\nPlease take a look at [the git flow documentation](https://guides.github.com/introduction/flow/) for an example of a good way to get your code into master.\nWelcome to GitHub!` 
-      }
-      app.log(`Creating an issue ${JSON.stringify(issue)}`)
-      //debugger;
-      var res = await context.github.issues.create(issue)
       // get branches, if master doesnt exist, create it
       
 //      app.log('Getting master SHA')
@@ -35,11 +22,12 @@ module.exports = app => {
 //        ref: `heads/{context.payload.repository.default_branch}`,
 //        sha: sha
 //      })
+    let {user,repo,owner,default_branch} = getInfoFromContext(context)
 
     var defaultBranchProtection = {
-      owner: context.payload.repository.owner.login,
-      repo: context.payload.repository.name,
-      branch: `${context.payload.repository.default_branch}`,
+      owner: owner,
+      repo: repo,
+      branch: default_branch,
       enforce_admins: true,
       restrictions: { 
         users: [],
@@ -54,6 +42,33 @@ module.exports = app => {
 
     res = await context.github.repos.updateBranchProtection(defaultBranchProtection)
     app.log(JSON.stringify(res))
+
+    var issue = { 
+      owner: owner,
+      repo: repo,
+      title: buildIssueTitle(user), 
+      body: buildIssuePayload()
+    }
+    app.log(`Creating an issue to notify ${user}`)
+    var res = await context.github.issues.create(issue)
     return
   })
+}
+
+var getInfoFromContext = (context) => {
+  const user = context.payload.sender.login
+  const repo = context.payload.repository.name 
+  const owner = context.payload.repository.owner.login 
+  const default_branch = context.payload.repository.default_branch
+  return { user, repo, owner, default_branch} 
+}
+
+var buildIssueTitle = (user) => {
+  return `Thank you @${user}, for creating a repository!`
+}
+
+var buildIssuePayload = () => {
+  return `The master branch has been protected so it cannot be directly committed to.  
+  Please take a look at [the git flow documentation](https://guides.github.com/introduction/flow/) for an example of a good way to get your code into master.  
+  Welcome to GitHub!` 
 }

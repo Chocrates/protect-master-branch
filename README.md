@@ -60,3 +60,6 @@ Chris McIntosh <j.chris.mcintosh@gmail.com> is the current maintainer.
 ## License
 
 [Public Domain](LICENSE.md) © 2019 Public 
+
+## References
+* https://github.com/robvanderleek/create-issue-branch/blob/master/probot.js
