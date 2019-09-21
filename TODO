@@ -1,4 +1,4 @@
-* Do some minor cleanup and get the app running
+* Do some minor cleanup and get the app running <- Done
 * Cleanup the README
 * Check for existence of master branch
 * Add event watching for 'push' or 'create' branch events to handle the case of no master branch initially
