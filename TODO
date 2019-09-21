@@ -1,0 +1,11 @@
+* Do some minor cleanup and get the app running
+* Cleanup the README
+* Check for existence of master branch
+* Add event watching for 'push' or 'create' branch events to handle the case of no master branch initially
+* Take stock of where we are against the requirements
+* Make sure README is updated with installation instructions
+* Add tests
+* Add code coverage
+* Add GitHub Actions job to run tests
+* Make Action set status on job
+* Make Status mandatory for PR's
