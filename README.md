@@ -18,17 +18,17 @@ npm start
 * [Create a new GitHub app](https://github.com/settings/apps/new)
 * Pick a name for the app
 * Write a description of what your GitHub App is going to do
-* Add a homepage URL
-** Use your GitHub repository if applicable
-* Input a Webhook URL
-** Navigate to [smee.io](https://smee.io) and get a webhook proxy url
-* Pick a webhook secret
+* Add a homepage URL  
+** Use your GitHub repository if applicable  
+* Input a Webhook URL  
+** Navigate to [smee.io](https://smee.io) and get a webhook proxy url  
+* Pick a webhook secret  
 ** Pick a long alpha numeric password, optionally grab a random string from [GRC's Perfect Password Utility](https://www.grc.com/passwords.htm)
-* Set the following permission from [app.yml]
-** Administration : Read & Write
-** Contents : Read-only
-** Issues : Read & write
-** Metadata : Read-only
+* Set the following permission from [app.yml]  
+** Administration : Read & Write  
+** Contents : Read-only  
+** Issues : Read & write  
+** Metadata : Read-only  
 
 * Subscribe to the following events
 ** Push
@@ -36,7 +36,7 @@ npm start
 * Click Create Github App
 * Generate a private key
 ** On the new page, scroll to the bottom and click Generate a private key
-* Create .env file
+* Create the .env file: 
 ```
 WEBHOOK_PROXY_URL=<smee.io webhook from earlier>
 APP_ID=<GitHub App ID from the current page>
@@ -47,7 +47,7 @@ WEBHOOK_SECRET=<The secret you generated earlier>
 ## Getting Help
 * Come chat with us in [Gitter](https://gitter.im/protect-master-branch/community) if you need help setting up your application
 * Browse Issues to see if your problem has been addressed or is currently known
-* Create a new issue so the community can help you through your issue and put together a fix together
+* Create a new issue so the community can help you through your issue and put a fix together
 
 ## Contributing
 
