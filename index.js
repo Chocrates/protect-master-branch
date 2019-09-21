@@ -1,7 +1,7 @@
 module.exports = app => {
   app.log('Yay, the app was loaded!')
 
-  app.on('repository.created', async context => {
+  app.on('create', async context => {
     app.log('Received Repo Created Event')
       // get branches, if master doesnt exist, create it
       
@@ -23,36 +23,49 @@ module.exports = app => {
 //        sha: sha
 //      })
     let {user,repo,owner,default_branch} = getInfoFromContext(context)
-
-    var defaultBranchProtection = {
+  
+    var res = await context.github.repos.listBranches({
       owner: owner,
-      repo: repo,
-      branch: default_branch,
-      enforce_admins: true,
-      restrictions: { 
-        users: [],
-        teams: [] 
-      }, 
-      required_pull_request_reviews: {
-        dismiss_stale_review: true,
-        require_code_owner_review: true
-      },
-      required_status_checks: null
-    }
+      repo: repo
+    })
+    
+    if(masterExists(res.data)) { 
+      var defaultBranchProtection = {
+        owner: owner,
+        repo: repo,
+        branch: default_branch,
+        enforce_admins: true,
+        restrictions: { 
+          users: [],
+          teams: [] 
+        }, 
+        required_pull_request_reviews: {
+          dismiss_stale_review: true,
+          require_code_owner_review: true
+        },
+        required_status_checks: null
+      }
 
-    res = await context.github.repos.updateBranchProtection(defaultBranchProtection)
-    app.log(JSON.stringify(res))
+      res = await context.github.repos.updateBranchProtection(defaultBranchProtection)
+      app.log(JSON.stringify(res))
 
-    var issue = { 
-      owner: owner,
-      repo: repo,
-      title: buildIssueTitle(user), 
-      body: buildIssuePayload()
+      var issue = { 
+        owner: owner,
+        repo: repo,
+        title: buildIssueTitle(user), 
+        body: buildIssuePayload()
+      }
+      app.log(`Creating an issue to notify ${user}`)
+      var res = await context.github.issues.create(issue)
+      return
+    } else {
+      app.log('Master does not exist yet, skipping')
     }
-    app.log(`Creating an issue to notify ${user}`)
-    var res = await context.github.issues.create(issue)
-    return
   })
+}
+
+var masterExists = (branches) => {
+  return branches.filter(b => b.name === 'master').length === 1
 }
 
 var getInfoFromContext = (context) => {
