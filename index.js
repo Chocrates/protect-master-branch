@@ -1,6 +1,5 @@
 module.exports = app => {
   app.log('Yay, the app was loaded!')
-  
   app.on('repository.edited', async context => {
     app.log('Received Repo Edited Event')
     if('default_branch' in context.payload.changes){
@@ -10,7 +9,6 @@ module.exports = app => {
       app.log('Default_branch change, updating branch protections')
       await updateDefaultBranchProtections(context,owner,repo,default_branch)
       app.log(`Removing branch protection for ${branch}`)
-      debugger
       await removeBranchProtection(context,owner,repo,branch)
       app.log(`Creating an issue to notify ${user}`)
       await notifyOwner(context,owner,repo,user,default_branch)
@@ -23,12 +21,9 @@ module.exports = app => {
     app.log('Received Branch Created Event')
     let {user,repo,owner,default_branch, branch} = getInfoFromContext(context)
   
-    var res = await context.github.repos.listBranches({
-      owner: owner,
-      repo: repo
-    })
+    var branches = await listBranches(context,owner,repo)
 
-    if(defaultBranchExists(res.data,default_branch) && branch === default_branch) { 
+    if(defaultBranchExists(branches,default_branch) && branch === default_branch) { 
       app.log(`Adding ${default_branch} protections`)
       await updateDefaultBranchProtections(context,owner,repo,default_branch)
       app.log(`Creating an issue to notify ${user}`)
@@ -38,6 +33,14 @@ module.exports = app => {
       app.log('Default_branch does not exist or this is not the default_branch, skipping')
     }
   })
+}
+
+var listBranches = async (context,owner,repo) => {
+  var res = await context.github.repos.listBranches({
+    owner: owner,
+    repo: repo
+  })
+  return res.data
 }
 
 var notifyOwner = async (context,owner,repo,user, default_branch) => {
@@ -104,5 +107,10 @@ var buildIssueTitle = (user) => {
 var buildIssuePayload = (default_branch) => {
   return `The ${default_branch} branch has been protected so it cannot be directly committed to.  
   Please take a look at [the git flow documentation](https://guides.github.com/introduction/flow/) for an example of a good way to get your code into master.  
-  Welcome to GitHub!` 
+  Welcome to GitHub!
+
+  Protections that have been added:  
+  * All commits require a reviewed pull request
+  * Administrators are subject to protection enforcement
+  * No users currently are bypassed` 
 }
