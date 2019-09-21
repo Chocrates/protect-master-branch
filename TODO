@@ -1,6 +1,3 @@
-* Take stock of where we are against the requirements
-* Make sure README is updated with installation instructions
-* Move manual install instructions to an INSTALL.md file so they don't clutter the readme
 * Add tests
 * Add code coverage
 * Add GitHub Actions job to run tests
