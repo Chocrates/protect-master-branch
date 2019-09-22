@@ -1,5 +1,5 @@
 # protect-master-branch 
-A GitHub App built with [Probot](https://github.com/probot/probot) that automatically protects the master branch upon the creation of new repositories
+A GitHub App built with [Probot](https://github.com/probot/probot) that automatically protects the master branch upon the creation of new repositories and will update the branch protections of the default branch is changed
 
 ## Setup
 
@@ -36,3 +36,6 @@ Chris McIntosh <j.chris.mcintosh@gmail.com>
 ## References
 * https://github.com/robvanderleek/create-issue-branch/blob/master/probot.js
 * https://probot-talk.slack.com 
+* https://developer.github.com/v3/activity/events/types/
+* https://guides.github.com/features/wikis/
+* http://unlicense.org
