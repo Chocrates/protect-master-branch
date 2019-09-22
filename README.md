@@ -18,7 +18,7 @@ npm start
 See [INSTALL](INSTALL.md) for manual installation instructions
 
 ## Getting Help
-* Come chat with us in [Gitter](https://gitter.im/protect-master-branch/community) if you need help setting up your application
+* [![Join the chat at https://gitter.im/protect-master-branch/community](https://badges.gitter.im/protect-master-branch/community.svg)](https://gitter.im/protect-master-branch/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) 
 * Browse Issues to see if your problem has been addressed or is currently known
 * Create a new issue so the community can help you through your issue and put a fix together
 
@@ -35,4 +35,7 @@ Chris McIntosh <j.chris.mcintosh@gmail.com> is the current maintainer.
 [Public Domain](LICENSE) © 2019 Public 
 
 ## References
-* https://github.com/robvanderleek/create-issue-branch/blob/master/probot.js
+* https://github.com/robvanderleek/create-issue-branch/blob/master/probot.js>>>>>>> initial_functionality
+40>>>>>>> initial_functionality
+40
+
