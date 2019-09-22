@@ -1,0 +1,5 @@
+* Add tests
+* Add code coverage
+* Add GitHub Actions job to run tests
+* Make Action set status on job
+* Make Status mandatory for PR's
