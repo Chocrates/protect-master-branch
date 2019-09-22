@@ -10,6 +10,12 @@ const listBranchesPayload = require("./fixtures/list.branches");
 
 const defaultBranchEditedPayload = require("./fixtures/repository.edited.default_branch");
 
+const repositoryEditedPayload = require("./fixtures/repository.edited");
+
+const defaultBranchCreatedPayload = require("./fixtures/branch.created.master")
+
+const anyBranchCreatedPayload = require("./fixtures/branch.created")
+
 const GitHub = require("probot/lib/github");
 
 const issueCreatedBody = {
@@ -25,6 +31,7 @@ describe("My Probot app", () => {
         const app = probot.load(myProbotApp);
         app.app = (() => "test");
     });
+    
     test("RepositoryEdited recieves correctly", async () => {
         const owner = "ChocratesTestOrg";
         const repo = "TestRepo";
@@ -34,6 +41,11 @@ describe("My Probot app", () => {
               .post('/app/installations/2056458/access_tokens')
               .reply(200, { token: 'test' })
 
+        // Ideally we can inject the method that are doing the api work
+        // into the app receiver eventually
+        // This will allow us to mock those methods and handle the api bits
+        // in the individual methods' unit tests.
+        // This will work for now to validate that the methods are getting called
         nock("https://api.github.com")
             .put(`/repos/${owner}/${repo}/branches/${branch}/protection`)
             .reply("200");
@@ -52,6 +64,62 @@ describe("My Probot app", () => {
         });
     });
 
+    test("RepositoryEdited event that isn't the default branch does nothing", async () => {
+        const owner = "ChocratesTestOrg";
+        const repo = "TestRepo";
+        const branch = "Chocrates-patch-1";
+        const previousBranch = 'master'
+        nock('https://api.github.com')
+              .post('/app/installations/2056458/access_tokens')
+              .reply(200, { token: 'test' })
+
+        await probot.receive({
+            name: "repository.edited",
+            payload: repositoryEditedPayload
+        });
+    })
+
+    test("Branch Created recieves correctly", async () => {
+        const owner = "ChocratesTestOrg";
+        const repo = "TestRepo";
+        const branch = "master";
+        nock('https://api.github.com')
+              .post('/app/installations/2056458/access_tokens')
+              .reply(200, { token: 'test' })
+
+        nock("https://api.github.com")
+            .get(`/repos/${owner}/${repo}/branches`).reply("200", listBranchesPayload);
+
+        nock("https://api.github.com")
+            .put(`/repos/${owner}/${repo}/branches/${branch}/protection`)
+            .reply("200");
+
+        nock("https://api.github.com")
+            .post(`/repos/${owner}/${repo}/issues`)
+            .reply("200");
+
+        await probot.receive({
+            name: "create",
+            payload: defaultBranchCreatedPayload
+        });
+    });
+
+    test("NonDefault Branch Created is ignored", async () => {
+        const owner = "ChocratesTestOrg";
+        const repo = "TestRepo";
+        const branch = "any";
+        nock('https://api.github.com')
+              .post('/app/installations/2056458/access_tokens')
+              .reply(200, { token: 'test' })
+
+        nock("https://api.github.com")
+            .get(`/repos/${owner}/${repo}/branches`).reply("200", listBranchesPayload);
+
+        await probot.receive({
+            name: "create",
+            payload: anyBranchCreatedPayload
+        });
+    });
     test("buildIssuePayload adds branch name to template", () => {
         var testBranch = "test";
         expect(app.buildIssuePayload(testBranch)).toEqual(expect.stringContaining(testBranch));
@@ -90,7 +158,8 @@ describe("My Probot app", () => {
                 protection_url: "https://api.github.com/repos/octocat/hello-world/branches/master/protection"
             } 
         ];
-        expect(branches).toMatchObject(expectedBranches);
+        expect(branches.length).toBe(2);
+        expect(branches.filter(b => b.name === 'master').length).toBe(1)
     });
     
     test("notifyOwner makes an issue request with proper payload", async () =>  {
